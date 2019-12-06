@@ -25,7 +25,7 @@ import (
 
 	"github.com/golang/glog"
 	"github.com/google/trillian"
-	"github.com/google/trillian/testonly/internal/hammer"
+	"github.com/google/trillian/testonly/hammer"
 	"google.golang.org/grpc"
 )
 
