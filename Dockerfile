@@ -24,7 +24,7 @@ RUN go install \
     github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway \
     github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc
 
-RUN go generate ./...
+RUN go generate -x ./...
 
 ## DB Integration
 FROM skeletal_trillian
