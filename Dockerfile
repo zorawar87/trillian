@@ -22,7 +22,9 @@ RUN go install \
     github.com/golang/mock/mockgen \
     golang.org/x/tools/cmd/stringer \
     github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway \
-    github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc
+    github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc \
+    github.com/golangci/golangci-lint/cmd/golangci-lint \
+    github.com/uber/prototool/cmd/prototool
 
 RUN go generate -x ./...
 
