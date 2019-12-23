@@ -1,0 +1,39 @@
+services:
+    trillian:
+        build: .
+        container_name: trillian
+        image: trillian
+        ports:
+        - '6962:6962'
+        - '6963:6963'
+        expose:
+        - '6962'
+        - '6963'
+        links:
+        - db
+
+    db:
+        image: mysql:5.7
+        command: --default-authentication-plugin=mysql_native_password
+        restart: always
+        environment:
+        - MYSQL_ROOT_PASSWORD=beeblebrox
+        - MYSQL_DATABASE=test
+        - MYSQL_USER=test
+        - MYSQL_PASSWORD=zaphod
+        ports:
+        # <Port exposed> : < MySQL Port running inside container>
+        - '3306:3306'
+        expose:
+        - '3306'
+        volumes:
+        - data_volume:/data/db
+
+    slate:
+        image: golang:1.11.13
+        restart: always
+
+volumes:
+    data_volume:
+
+version: '3'
