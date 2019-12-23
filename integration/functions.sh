@@ -163,6 +163,7 @@ log_prep_test() {
     ./trillian_log_server ${ETCD_OPTS} ${pkcs11_opts} ${logserver_opts} \
       --rpc_endpoint="localhost:${port}" \
       --http_endpoint="localhost:${http}" \
+      --mysql_uri="test:zaphod@tcp(db:3306)/test" \
       ${LOGGING_OPTS} \
       &
     pid=$!
@@ -193,6 +194,7 @@ log_prep_test() {
       --rpc_endpoint="localhost:${port}" \
       --http_endpoint="localhost:${http}" \
       --num_sequencers 2 \
+      --mysql_uri="test:zaphod@tcp(db:3306)/test" \
       ${LOGGING_OPTS} \
       &
     pid=$!
