@@ -1,21 +1,55 @@
 services:
-    trillian:
-        build: .
-        container_name: trillian
-        image: trillian
-        ports:
-        - '6962:6962'
-        - '6963:6963'
-        - '6965:6965'
-        expose:
-        - '6962'
-        - '6963'
-        - '6964'
-        - '6965'
-        links:
-        - db
+    #core:
+    #    build: .
+    #    environment:
+    #    - MYSQL_HOST=mysql
+    #    - MYSQL_ROOT_PASSWORD=beeblebrox
+    #    - MYSQL_USER=test
+    #    - MYSQL_PASSWORD=zaphod
+    #    restart: always
+    #    links:
+    #    - mysql
 
-    db:
+    tlserver:
+        build:
+            dockerfile: ./config/tlserver/Dockerfile
+            context: .
+            args:
+            - GOFLAGS
+        environment:
+        - MYSQL_HOST=mysql
+        - MYSQL_ROOT_PASSWORD=beeblebrox
+        - MYSQL_USER=test
+        - MYSQL_PASSWORD=zaphod
+        restart: always
+        ports:
+        - '8090:8090'
+        - '8091:8091'
+        expose:
+        - '8090'
+        - '8091'
+        depends_on:
+        - mysql
+
+    tlsigner:
+        build:
+            context: .
+            dockerfile: ./config/tlsigner/Dockerfile
+            args:
+            - GOFLAGS
+        restart: always
+        environment:
+        - MYSQL_HOST=mysql
+        - MYSQL_ROOT_PASSWORD=beeblebrox
+        - MYSQL_USER=test
+        - MYSQL_PASSWORD=zaphod
+        ports:
+        - '8092:8091'
+        depends_on:
+        - mysql
+
+
+    mysql:
         image: mysql:5.7
         command: --default-authentication-plugin=mysql_native_password
         restart: always
@@ -33,7 +67,7 @@ services:
         - data_volume:/data/db
 
     slate:
-        image: golang:1.11.13
+        image: golang:1.11
         restart: always
 
 volumes:
