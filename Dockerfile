@@ -1,4 +1,4 @@
-FROM golang:1.11.13 as builder
+FROM golang:1.11 as builder
 RUN apt update -qq
 RUN apt install -y unzip default-mysql-client-core lsof
 
@@ -30,10 +30,15 @@ RUN go generate -x ./...
 
 ## DB Integration
 FROM skeletal_trillian
-ENV MYSQL_HOST=db MYSQL_ROOT_PASSWORD=beeblebrox
 
 # Tests
 #RUN go test ./...
-RUN go test ./storage/mysql/...
+#RUN go test ./storage/mysql/...
 
-CMD "./integration/integration_test.sh"
+# install log server and log signer
+#RUN cp -r ./config /config
+#RUN go install \
+#    ./server/trillian_log_server \
+#    ./server/trillian_log_signer
+
+CMD "bash"
