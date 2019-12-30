@@ -20,8 +20,6 @@ COPY config/signer.cfg /
 #COPY --from=build /go/bin/trillian_log_signer /
 #COPY --from=build /go/src/github.com/zorawar87/trillian/config/signer.cfg /
 #
-RUN ls /go/bin
-RUN cat /signer.cfg
 CMD "bash"
 #ENTRYPOINT ["/go/bin/trillian_log_signer", "--config=/signer.cfg"]
 
