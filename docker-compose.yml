@@ -1,19 +1,23 @@
 services:
-    #core:
-    #    build: .
-    #    environment:
-    #    - MYSQL_HOST=mysql
-    #    - MYSQL_ROOT_PASSWORD=beeblebrox
-    #    - MYSQL_USER=test
-    #    - MYSQL_PASSWORD=zaphod
-    #    restart: always
-    #    links:
-    #    - mysql
+    core:
+        build:
+            context: .
+            dockerfile: ./config/core/Dockerfile
+            args:
+            - GOFLAGS
+        environment:
+        - MYSQL_HOST=mysql
+        - MYSQL_ROOT_PASSWORD=beeblebrox
+        - MYSQL_USER=test
+        - MYSQL_PASSWORD=zaphod
+        restart: always
+        links:
+        - mysql
 
     tlserver:
         build:
-            dockerfile: ./config/tlserver/Dockerfile
             context: .
+            dockerfile: ./config/tlserver/Dockerfile
             args:
             - GOFLAGS
         environment:
@@ -66,9 +70,6 @@ services:
         volumes:
         - data_volume:/data/db
 
-    slate:
-        image: golang:1.11
-        restart: always
 
 volumes:
     data_volume:
