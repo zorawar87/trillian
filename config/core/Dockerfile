@@ -1,7 +1,7 @@
 FROM golang:1.11 as build
 
 RUN apt update -qq
-RUN apt install -y default-mysql-client-core lsof
+RUN apt install -y default-mysql-client-core lsof vim
 
 ARG GOFLAGS=""
 RUN go get -u -t github.com/zorawar87/trillian/
@@ -10,7 +10,7 @@ WORKDIR /go/src/github.com/zorawar87/trillian
 ENV MYSQL_HOST=db MYSQL_ROOT_PASSWORD=beeblebrox GO111MODULE=on
 #RUN bash -c "scripts/resetdb.sh --force --verbose"
 
-RUN go install ./server/trillian_log_server
+RUN go install ./cmd/createtree
 
 COPY config/server.cfg /
 
