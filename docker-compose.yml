@@ -5,11 +5,6 @@ services:
             dockerfile: ./config/core/Dockerfile
             args:
             - GOFLAGS
-        environment:
-        - MYSQL_HOST=mysql
-        - MYSQL_ROOT_PASSWORD=beeblebrox
-        - MYSQL_USER=test
-        - MYSQL_PASSWORD=zaphod
         restart: always
         links:
         - mysql
@@ -20,11 +15,6 @@ services:
             dockerfile: ./config/tlserver/Dockerfile
             args:
             - GOFLAGS
-        environment:
-        - MYSQL_HOST=mysql
-        - MYSQL_ROOT_PASSWORD=beeblebrox
-        - MYSQL_USER=test
-        - MYSQL_PASSWORD=zaphod
         restart: always
         ports:
         - '8090:8090'
@@ -42,11 +32,6 @@ services:
             args:
             - GOFLAGS
         restart: always
-        environment:
-        - MYSQL_HOST=mysql
-        - MYSQL_ROOT_PASSWORD=beeblebrox
-        - MYSQL_USER=test
-        - MYSQL_PASSWORD=zaphod
         ports:
         - '8092:8091'
         depends_on:
@@ -59,7 +44,7 @@ services:
         restart: always
         environment:
         - MYSQL_ROOT_PASSWORD=beeblebrox
-        - MYSQL_DATABASE=test
+        - MYSQL_DATABASE=cttest
         - MYSQL_USER=test
         - MYSQL_PASSWORD=zaphod
         ports:
