@@ -1,44 +1,17 @@
-FROM golang:1.11 as builder
+FROM golang:1.11 as build
+
 RUN apt update -qq
-RUN apt install -y unzip default-mysql-client-core lsof
+RUN apt install -y default-mysql-client-core lsof
 
-# install protobuffer compiler
-ADD https://github.com/protocolbuffers/protobuf/releases/download/v3.5.1/protoc-3.5.1-linux-x86_64.zip /opt/
-RUN unzip -qq /opt/protoc-3.5.1-linux-x86_64.zip -d /opt/protoc
-ENV PATH "${PATH}:/opt/protoc/bin"
-
-# install trillian
-FROM builder as skeletal_trillian
-RUN go get -u -t github.com/zorawar87/trillian
+ARG GOFLAGS=""
+RUN go get -u -t github.com/zorawar87/trillian/
 WORKDIR /go/src/github.com/zorawar87/trillian
-ENV GO111MODULE=on
-RUN go build ./...
 
-# Build Developer dependencies (Travis:Generate)
-RUN git clone --depth=1 https://github.com/googleapis/googleapis.git "$GOPATH/src/github.com/googleapis/googleapis"
-RUN go install \
-    github.com/golang/protobuf/proto \
-    github.com/golang/protobuf/protoc-gen-go \
-    github.com/golang/mock/mockgen \
-    golang.org/x/tools/cmd/stringer \
-    github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway \
-    github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc \
-    github.com/golangci/golangci-lint/cmd/golangci-lint \
-    github.com/uber/prototool/cmd/prototool
+ENV GO111MODULE=on MYSQL_HOST=mysql MYSQL_USER=test MYSQL_PASSWORD=zaphod MYSQL_ROOT_PASSWORD=beeblebrox
 
-RUN go generate -x ./...
+COPY config/signer.cfg /
+COPY config/server.cfg /
+COPY config/docker-entrypoint.sh /
 
-## DB Integration
-FROM skeletal_trillian
-
-# Tests
-#RUN go test ./...
-#RUN go test ./storage/mysql/...
-
-# install log server and log signer
-#RUN cp -r ./config /config
-#RUN go install \
-#    ./server/trillian_log_server \
-#    ./server/trillian_log_signer
-
-CMD "bash"
+ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD ["bash"]

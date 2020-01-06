@@ -1,14 +1,26 @@
 #!/bin/bash
 set -e
 
+function install_trillian(){
+    echo "[1 of 3] installing tlserver"
+    go install ./server/trillian_log_server
+    echo "[2 of 3] installing tlsigner"
+    go install ./server/trillian_log_signer
+    echo "[3 of 3] installing create-tree utility"
+    go install ./cmd/createtree
+}
+
+function install_ct(){
+    echo "[1 of 1] install ct_server"
+    go install ./trillian/ctfe/ct_server
+}
+
 function resetdb(){
     echo "resetting db..."
     sh -c "./scripts/resetdb.sh --force"
 }
 
 function create_tree(){
-    echo "install create tree utility"
-    go install ./cmd/createtree
     echo "creating merkle tree"
     # admin_server is hardlinked to tlserver hostname
     # this will print out the tree_id created. required for later steps
@@ -25,8 +37,8 @@ function tlsigner(){
     sh -c "trillian_log_signer --config=/signer.cfg"
 }
 
-function core(){
-    echo "invoking core..."
+function ctserver(){
+    echo "ct_server is (probably) good to go!"
 }
 
 while test $# -gt 0
@@ -36,6 +48,10 @@ do
             ;;
         bash) bash
             ;;
+        --install-trillian) install_trillian
+            ;;
+        --install-ct) install_ct
+            ;;
         --resetdb) resetdb
             ;;
         --createtree) create_tree
@@ -44,7 +60,7 @@ do
             ;;
         --tlsigner) tlsigner
             ;;
-        --core) core
+        --ctserver) ctserver
             ;;
         *) echo "ignoring argument $1"
             ;;
