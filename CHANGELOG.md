@@ -10,11 +10,23 @@ being re-enabled. This was broken by a downstream change and without a signal
 from the Trillian community to say this is needed, the pragmatic action is to
 not spend time investigating this issue.
 
+### Deployments
+
+The Kubernetes configs will now provision 5 nodes for Trillian's Etcd cluster,
+instead of 3 nodes.
+[This makes the Etcd cluster more resilient](https://etcd.io/docs/v3.2.17/faq/#what-is-failure-tolerance)
+to nodes becoming temporarily unavailable, such as during updates (it can now
+tolerate 2 nodes being unavailable, instead of just 1).
+
 ### Log Changes
 
 #### Potential sequencer hang fixed
 A potential deadlock condition in the log sequencer when the process is
 attempting to exit has been addressed.
+
+#### Monitoring & Metrics
+A count of the total number of individual leaves the logserver attempts to
+fetch via the GetEntries.\* API methods has been added.
 
 ### Map Changes
 
