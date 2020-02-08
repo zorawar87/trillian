@@ -32,14 +32,15 @@ import (
 	"github.com/google/trillian/monitoring"
 	"github.com/google/trillian/monitoring/opencensus"
 	"github.com/google/trillian/monitoring/prometheus"
-	"github.com/google/trillian/server"
+	"github.com/google/trillian/quota"
+	"github.com/google/trillian/quota/etcd"
 	"github.com/google/trillian/storage"
 	"github.com/google/trillian/util"
 	"github.com/google/trillian/util/clock"
 	"github.com/google/trillian/util/election"
 	"github.com/google/trillian/util/election2"
 	etcdelect "github.com/google/trillian/util/election2/etcd"
-	"github.com/google/trillian/util/etcd"
+	etcdutil "github.com/google/trillian/util/etcd"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"google.golang.org/grpc"
 
@@ -56,6 +57,9 @@ import (
 
 	// Load hashers
 	_ "github.com/google/trillian/merkle/rfc6962"
+
+	// Load MySQL quota provider
+	_ "github.com/google/trillian/quota/mysqlqm"
 )
 
 var (
@@ -109,9 +113,9 @@ func main() {
 	}
 	defer sp.Close()
 
-	client, err := etcd.NewClientFromString(*server.EtcdServers)
+	client, err := etcdutil.NewClientFromString(*etcd.Servers)
 	if err != nil {
-		glog.Exitf("Failed to connect to etcd at %v: %v", server.EtcdServers, err)
+		glog.Exitf("Failed to connect to etcd at %v: %v", etcd.Servers, err)
 	}
 	if client != nil {
 		defer client.Close()
@@ -134,7 +138,7 @@ func main() {
 		glog.Exit("Either --force_master or --etcd_servers must be supplied")
 	}
 
-	qm, err := server.NewQuotaManagerFromFlags()
+	qm, err := quota.NewManagerFromFlags()
 	if err != nil {
 		glog.Exitf("Error creating quota manager: %v", err)
 	}

@@ -9,9 +9,11 @@ Not yet released; provisionally v1.4.0 (may change).
 The `trillian_log_server`, `trillian_log_signer` and `trillian_map_server`
 binaries have moved from `github.com/google/trillian/server/` to
 `github.com/google/trillian/cmd`. A subset of the `server` package has also
-moved and now resides in `github.com/google/trillian/cmd/internal/serverutil`.
+moved and has been split into `cmd/internal/serverutil`, `quota/etcd` and
+`quota/mysqlqm` packages.
 
 ### Bazel Changes
+
 Python support is disabled unless we hear that the community cares about this
 being re-enabled. This was broken by a downstream change and without a signal
 from the Trillian community to say this is needed, the pragmatic action is to
@@ -69,7 +71,17 @@ support when the new API is tested.
 
 ### Quota
 
+#### New Features
+
 An experimental Redis-based `quota.Manager` implementation has been added.
+
+#### Behaviour Changes
+
+Quota used to be refunded for all failed requests. For uses of quota that were
+to protect against abuse or fair utilization, this could allow infinite QPS in
+situations that really should have the requests throttled. Refunds are now only
+performed for tokens in `Global` buckets, which prevents tokens being leaked if
+duplicate leaves are queued.
 
 ### Tools
 

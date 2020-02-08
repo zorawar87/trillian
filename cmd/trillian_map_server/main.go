@@ -33,11 +33,13 @@ import (
 	"github.com/google/trillian/monitoring"
 	"github.com/google/trillian/monitoring/opencensus"
 	"github.com/google/trillian/monitoring/prometheus"
+	"github.com/google/trillian/quota"
+	"github.com/google/trillian/quota/etcd"
 	"github.com/google/trillian/quota/etcd/quotaapi"
 	"github.com/google/trillian/quota/etcd/quotapb"
 	"github.com/google/trillian/server"
 	"github.com/google/trillian/storage"
-	"github.com/google/trillian/util/etcd"
+	etcdutil "github.com/google/trillian/util/etcd"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"google.golang.org/grpc"
 
@@ -53,6 +55,9 @@ import (
 	// Load hashers
 	_ "github.com/google/trillian/merkle/coniks"
 	_ "github.com/google/trillian/merkle/maphasher"
+
+	// Load MySQL quota provider
+	_ "github.com/google/trillian/quota/mysqlqm"
 )
 
 var (
@@ -110,12 +115,12 @@ func main() {
 	}
 	defer sp.Close()
 
-	client, err := etcd.NewClientFromString(*server.EtcdServers)
+	client, err := etcdutil.NewClientFromString(*etcd.Servers)
 	if err != nil {
-		glog.Exitf("Failed to connect to etcd at %v: %v", server.EtcdServers, err)
+		glog.Exitf("Failed to connect to etcd at %v: %v", etcd.Servers, err)
 	}
 
-	qm, err := server.NewQuotaManagerFromFlags()
+	qm, err := quota.NewManagerFromFlags()
 	if err != nil {
 		glog.Exitf("Error creating quota manager: %v", err)
 	}
@@ -153,7 +158,7 @@ func main() {
 			if err := trillian.RegisterTrillianMapHandlerFromEndpoint(ctx, mux, endpoint, opts); err != nil {
 				return err
 			}
-			if *server.QuotaSystem == server.QuotaEtcd {
+			if *quota.System == etcd.QuotaManagerName {
 				return quotapb.RegisterQuotaHandlerFromEndpoint(ctx, mux, endpoint, opts)
 			}
 			return nil
@@ -178,7 +183,7 @@ func main() {
 			}
 			trillian.RegisterTrillianMapWriteServer(s, writeServer)
 
-			if *server.QuotaSystem == server.QuotaEtcd {
+			if *quota.System == etcd.QuotaManagerName {
 				quotapb.RegisterQuotaServer(s, quotaapi.NewServer(client))
 			}
 			return nil
