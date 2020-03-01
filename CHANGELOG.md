@@ -4,6 +4,12 @@
 
 Not yet released; provisionally v1.4.0 (may change).
 
+### HTTP APIs
+
+The HTTP/JSON APIs have been removed in favor of a pure gRPC intereface.
+[grpcurl](https://github.com/fullstorydev/grpcurl) is the recommended way
+of interacting with the gRPC API from the commandline.
+
 ### Server Binaries
 
 The `trillian_log_server`, `trillian_log_signer` and `trillian_map_server`
@@ -26,6 +32,8 @@ instead of 3 nodes.
 [This makes the Etcd cluster more resilient](https://etcd.io/docs/v3.2.17/faq/#what-is-failure-tolerance)
 to nodes becoming temporarily unavailable, such as during updates (it can now
 tolerate 2 nodes being unavailable, instead of just 1).
+
+The etcd-operator deployment has been updated from v0.9.1 to v0.9.4.
 
 ### Log Changes
 
@@ -88,6 +96,14 @@ duplicate leaves are queued.
 The `licenses` tool has been moved from "scripts/licenses" to [a dedicated
 repository](https://github.com/google/go-licenses).
 
+## v1.3.3 - Module fixes
+
+Published 2019-10-31 17:30:00 +0000 UTC
+
+Patch release to address Go Module issue. Removes `replace` directives in our
+go.mod file now that our dependencies have fixed their invalid pseudo-version
+issues.
+
 ## v1.3.2 - Module fixes
 
 Published 2019-09-05 17:30:00 +0000 UTC
@@ -119,7 +135,7 @@ comparisons using all fields can produce incorrect results.
 
 ### Storage Commit takes context.Context
 
-To support passing a context down to `NodeStorage.SetLeaves`, and remove various `context.TODO()`s, 
+To support passing a context down to `NodeStorage.SetLeaves`, and remove various `context.TODO()`s,
 the following functions have been modified to accept a `context.Context` parameter:
 
 - `storage/cache.NodeStorage.SetLeaves`
@@ -141,7 +157,7 @@ be tuned & provisioned differently for read vs write performance.
 Allow map clients to forgo fetching inclusion proofs.
 This dramatically speeds things up for clients that don't need verifiability.
 This situation occurs in some situation where a Trillian personality is
-interacting directly with the Trillian Map. 
+interacting directly with the Trillian Map.
 
 ### GetMapLeafByRevision API
 New GetMapLeafByRevision API for fetching a single map leaf. This allows there
